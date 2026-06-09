@@ -97,9 +97,9 @@ job:
 | DayStarter | Flutter+NestJS (30) | 게이미피케이션 (10) | 가상재화·결제 (10) | 3년 (10) | 60 |
 | Harmony Link | Flutter+NestJS (25) | 헬스케어 (10) | 실시간·알림·관리 (15) | 6개월 (10) | 60 |
 
-### 최종 추천 3개
+### 최종 추천 3개 (사용자 요청으로 Calendar Share → Harmony Link 교체)
 1. **Connectin** — 프로필 기반 매칭·1:1 메시징 도메인 직접 경험 (가장 직접적 유사)
-2. **Calendar Share** — Firebase/Supabase 실시간 채팅 + 7종 FCM 푸시 + 좋아요 소셜 인터랙션 (기술·기능 직접 대응)
+2. **Harmony Link** — Next.js RBAC 관리자 백오피스 + FCM 실시간 푸시 + Flutter 소셜 로그인 (관리자 승인 시스템·알림 직접 대응)
 3. **Fortune App** — Flutter B2C 단기 양대 마켓 출시 패턴 + 소셜 로그인 (60일 일정 근거)
 
 ## 5. 최종 제안 요약
@@ -110,7 +110,7 @@ job:
   - 산정 근거: 클라이언트 예상 60일과 일치, 내부 산정 ~67일이나 20% 이내 → 스코프 동결 + 단계별 납품으로 60일 매칭
 - **핵심 제안 포인트**:
   1. Connectin (프로필 기반 매칭 + 1:1 메시징 + Flutter 양대 마켓) 매칭 플랫폼 도메인 직접 경험 전이
-  2. Calendar Share (Firebase/Supabase 실시간 채팅 + 7종 FCM 푸시) 우대 사항인 실시간 채팅 구현 경험 직접 충족
+  2. Harmony Link (Next.js RBAC 관리자 백오피스 + FCM 실시간 푸시 + Flutter 소셜 로그인) 관리자 승인 시스템·알림 직접 대응
   3. Fortune App (Flutter B2C 3개월 풀패키지 출시 + SSO) 60일 MVP 출시 일정의 실현 근거
   4. 신뢰 기반 인증 흐름(휴대폰 본인 인증 + 관리자 인증 사진 심사 승인) MVP 단계부터 견고하게 구성
   5. 취미·성향 키워드·매칭 로그 정형화 적재로 추천 고도화 확장 대비
@@ -201,11 +201,11 @@ job:
 - 유사점: 프로필 기반 매칭 도메인 직접 경험(추천·좋아요·매칭·1:1 채팅 흐름 전이), Flutter 양대 마켓 출시, 관리자 패널 구축
 - 기술 스택: Flutter, BLoC, Express, PostgreSQL, Firebase Auth/FCM, Docker
 
-▶ Calendar Share — 소셜 캘린더 공유 앱 (2025.01, MVP)
-- 프로젝트 유형: B2C 소셜 앱 (Flutter)
-- 핵심 기능: 1:1 실시간 채팅(Firebase RTDB 리스너), 7종 FCM 푸시 + 딥링크, 좋아요·팔로우 소셜 인터랙션, Firebase 8개 서비스 + Supabase 듀얼 백엔드
-- 유사점: 본 프로젝트 핵심인 1:1 실시간 채팅 + FCM 푸시를 Firebase/Supabase로 구축한 직접 경험(우대 사항 충족), 좋아요 소셜 인터랙션 패턴 동일
-- 기술 스택: Flutter 3.27, Firebase RTDB/Firestore, Supabase, FCM, Provider
+▶ Harmony Link — 통합 관리 플랫폼 (2025, 약 6개월)
+- 프로젝트 유형: B2B SaaS 멀티플랫폼 (Flutter + NestJS)
+- 핵심 기능: FCM 실시간 푸시 알림, Next.js 관리자 웹 패널 + RBAC 6개 역할, 카카오/네이버 소셜 로그인, Firebase Auth, 멀티테넌트 (133K+ LOC, 140+ API, 6개 플랫폼)
+- 유사점: 본 프로젝트의 관리자 백오피스(인증 사진 심사·가입 승인)에 직접 대응되는 RBAC 관리자 웹 구축 경험, FCM 실시간 푸시 알림, Flutter 양대 마켓 + 소셜 로그인
+- 기술 스택: Flutter 3.35, BLoC, NestJS 10, Next.js 13, MySQL, Firebase Auth/FCM, AWS
 
 ▶ Fortune App — Flutter B2C 운세 앱 (2024.07~2024.09, 3개월)
 - 프로젝트 유형: B2C 라이프스타일 모바일 앱
@@ -239,5 +239,5 @@ job:
 
 ### 관련 포트폴리오 추천
 1. **Connectin** — 프로필 기반 매칭·1:1 메시징 도메인 직접 경험 (Flutter 풀스택, 3개월 양대 마켓 출시, 관리자 패널)
-2. **Calendar Share** — Firebase/Supabase 실시간 채팅 + 7종 FCM 푸시 직접 구현 (우대 사항 충족)
+2. **Harmony Link** — Next.js RBAC 관리자 백오피스 + FCM 실시간 푸시 + Flutter 소셜 로그인 (관리자 승인 시스템·알림 직접 대응)
 3. **Fortune App** — Flutter B2C 3개월 풀패키지 양대 마켓 출시 + 소셜 로그인 (60일 일정 근거)

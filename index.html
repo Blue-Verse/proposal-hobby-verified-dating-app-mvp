@@ -272,7 +272,7 @@
               <h2>제안 포인트</h2>
               <ol>
                 <li><strong>매칭 플랫폼 도메인 직접 경험 전이</strong> — Connectin(프로필 기반 매칭·근거리 탐색·1:1 보안 메시징) 수행 경험을 데이팅 추천·매칭 흐름에 그대로 적용합니다.</li>
-                <li><strong>Firebase/Supabase 실시간 + 푸시 검증 패턴</strong> — Calendar Share에서 Firebase RTDB 3종 리스너 기반 실시간 채팅과 7종 FCM 푸시를 구축한 경험으로, 채팅·알림을 안정적으로 구현합니다.</li>
+                <li><strong>실시간 푸시 + 관리자 백오피스 검증 패턴</strong> — Harmony Link에서 FCM 실시간 푸시 알림과 Next.js 기반 RBAC 관리자 웹 패널을 구축한 경험으로, 매칭·채팅 알림과 인증 사진 심사·가입 승인 백오피스를 안정적으로 구현합니다.</li>
                 <li><strong>Flutter 단일 코드베이스 양대 마켓 출시</strong> — Fortune App 등에서 기획·디자인·개발·스토어 심사까지 단기 풀패키지 출시를 수행하여, iOS/Android 동시 출시 일정을 보장합니다.</li>
                 <li><strong>신뢰 기반 인증 흐름 설계</strong> — 휴대폰 본인 인증과 관리자 인증 사진 심사 승인을 결합해, 프리미엄 데이팅에 필수적인 신뢰 게이트를 MVP 단계부터 견고하게 구성합니다.</li>
                 <li><strong>확장 대비 데이터 모델</strong> — 취미·성향 키워드와 매칭 로그를 정형화 적재하여, 향후 추천 고도화(가중치·큐레이션) 도입에 바로 활용할 수 있도록 설계합니다.</li>
@@ -605,11 +605,11 @@
             </div>
             <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
               <p class="text-2xl font-bold text-sky-700">실시간</p>
-              <p class="mt-1 text-xs text-slate-500">채팅 + 7종 FCM 푸시 구축</p>
+              <p class="mt-1 text-xs text-slate-500">FCM 푸시 알림 구축</p>
             </div>
             <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
-              <p class="text-2xl font-bold text-sky-700">Firebase</p>
-              <p class="mt-1 text-xs text-slate-500">+ Supabase 듀얼 백엔드</p>
+              <p class="text-2xl font-bold text-sky-700">관리자 웹</p>
+              <p class="mt-1 text-xs text-slate-500">RBAC 백오피스 구축</p>
             </div>
           </div>
 
@@ -641,29 +641,29 @@
               </div>
             </div>
 
-            <!-- Calendar Share -->
+            <!-- Harmony Link -->
             <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
-              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소셜 앱 · 실시간</div>
-              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Calendar Share — 소셜 캘린더 공유 앱</h3>
-              <p class="mt-1 text-xs text-slate-400">B2C 소셜 앱 (Flutter) · 2025.01 (MVP)</p>
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">멀티플랫폼 · 관리자 백오피스</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Harmony Link — 통합 관리 플랫폼</h3>
+              <p class="mt-1 text-xs text-slate-400">B2B SaaS 헬스케어 (Flutter+NestJS) · 2025 (약 6개월)</p>
               <div class="mt-3 doc-content">
                 <h4>프로젝트 개요</h4>
-                <p>소셜 피드와 실시간 채팅을 결합한 크로스플랫폼 모바일 앱. Flutter 17.6K LOC, 45+ 화면, Firebase 8개 서비스 + Supabase 듀얼 백엔드.</p>
+                <p>모바일 앱 + 실시간 푸시 알림 + 관리자 웹 패널을 통합한 멀티플랫폼 관리 시스템. Flutter+NestJS, 133K+ LOC, 140+ API, 6개 플랫폼 지원.</p>
                 <h4>핵심 기능</h4>
                 <ul>
-                  <li>1:1 실시간 채팅 (Firebase RTDB 3종 리스너 기반 즉시 동기화)</li>
-                  <li>7종 FCM 푸시 알림 + 딥링크 네비게이션</li>
-                  <li>좋아요·팔로우 등 소셜 인터랙션, QR 디스커버리</li>
+                  <li>실시간 FCM 푸시 알림 기반 소통 (이벤트 발생 즉시 알림)</li>
+                  <li>Next.js 관리자 웹 패널 + RBAC 6개 역할 권한 관리</li>
+                  <li>카카오/네이버 소셜 로그인, Firebase Auth, 멀티테넌트</li>
                 </ul>
                 <h4>본 프로젝트와의 유사점</h4>
-                <p>본 프로젝트 핵심인 1:1 실시간 채팅과 FCM 푸시를 Firebase/Supabase로 구축한 직접 경험. 좋아요·팔로우 등 소셜 인터랙션 패턴도 좋아요·매칭 흐름에 그대로 적용 가능합니다.</p>
+                <p>본 프로젝트의 관리자 백오피스(인증 사진 심사·가입 승인)에 직접 대응되는 RBAC 기반 관리자 웹 구축 경험과, FCM 실시간 푸시 알림, Flutter 양대 마켓 + 소셜 로그인을 그대로 적용할 수 있습니다.</p>
                 <h4>기술 스택</h4>
                 <div class="flex flex-wrap gap-1.5 not-prose">
-                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter 3.27</span>
-                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase RTDB/Firestore</span>
-                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Supabase</span>
-                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">FCM</span>
-                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Provider</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter 3.35</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">BLoC</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS 10</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js 13</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase Auth/FCM</span>
                 </div>
               </div>
             </div>
