@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="취미 및 프로필 인증 기반 프리미엄 데이팅 앱 MVP 구축 — 프로젝트 제안서" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['SUIT Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px -18px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; font-size: 16px; /* 12pt minimum base */ }
+    body {
+      font-family: 'SUIT Variable', sans-serif;
+      font-size: 1rem; /* 16px = 12pt */
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.06), transparent 48%);
+    }
+
+    /* ─── doc-content typography (from harmony-link-be) ─── */
+    .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4 {
+      color: rgb(15 23 42); font-weight: 700; letter-spacing: -0.01em;
+      line-height: 1.3; margin-top: 1.6em; margin-bottom: 0.7em;
+    }
+    .doc-content h1 { font-size: 2rem; margin-top: 0.2em; }
+    .doc-content h2 { font-size: 1.4rem; }
+    .doc-content h3 { font-size: 1.15rem; }
+    .doc-content p, .doc-content li {
+      color: rgb(51 65 85); line-height: 1.8; font-size: 1rem;
+    }
+    .doc-content p, .doc-content ul, .doc-content ol,
+    .doc-content table, .doc-content pre, .doc-content blockquote {
+      margin-bottom: 1rem;
+    }
+    .doc-content ul, .doc-content ol { padding-left: 1.2rem; }
+    .doc-content ul { list-style: disc; }
+    .doc-content ol { list-style: decimal; }
+    .doc-content table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid rgb(226 232 240); border-radius: 0.75rem;
+      overflow: hidden; font-size: 1rem;
+    }
+    .doc-content th, .doc-content td {
+      border: 1px solid rgb(226 232 240); padding: 0.7rem 0.8rem;
+      text-align: left; vertical-align: top;
+    }
+    .doc-content th {
+      background: rgb(248 250 252); color: rgb(30 41 59); font-weight: 600;
+    }
+    .doc-content pre, .doc-content code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    .doc-content pre {
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem; border-radius: 0.75rem; overflow-x: auto;
+      font-size: 1rem; line-height: 1.65;
+    }
+    .doc-content p code, .doc-content li code,
+    .doc-content td code, .doc-content th code {
+      background: rgb(241 245 249); color: rgb(15 23 42);
+      border: 1px solid rgb(226 232 240); border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; font-size: 1em;
+    }
+    .doc-content blockquote {
+      border-left: 3px solid rgb(14 165 233); padding-left: 0.85rem;
+      color: rgb(71 85 105); background: rgb(240 249 255);
+      border-radius: 0.5rem; padding-top: 0.55rem; padding-bottom: 0.55rem;
+    }
+
+    /* ─── 12pt (16px) minimum font size ─── */
+    .text-xs { font-size: 1rem !important; }
+
+    /* ─── Timeline ─── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0.25rem; bottom: 0.25rem;
+      width: 2px; background: rgb(186 230 253);
+    }
+    .timeline-item { position: relative; margin-bottom: 1.75rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -1.65rem; top: 0.35rem;
+      width: 0.75rem; height: 0.75rem; border-radius: 50%;
+      background: rgb(2 132 199); border: 3px solid rgb(224 242 254);
+    }
+
+    /* ─── Page sections ─── */
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* ─── Mobile sidebar toggle ─── */
+    #sidebar-backdrop { display: none; }
+    #sidebar-backdrop.open { display: block; }
+    @media (max-width: 1023px) {
+      #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; position: fixed; top: 0; left: 0; z-index: 40; height: 100vh; width: 80vw; max-width: 320px; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
+  <title>취미 및 프로필 인증 기반 프리미엄 데이팅 앱 MVP 구축 — 프로젝트 제안서</title>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+  <div class="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+
+    <!-- ─── Header ─── -->
+    <header class="mb-6 rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-3 shadow-soft backdrop-blur">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="sidebar-toggle" class="lg:hidden inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          메뉴
+        </button>
+        <a href="#home" class="inline-flex items-center shrink-0 text-sm font-bold tracking-tight text-slate-800">
+          프로젝트 제안서
+        </a>
+        <div class="hidden sm:block ml-auto text-right">
+          <p class="text-sm font-semibold tracking-[0.04em] text-sky-700/90">취미·프로필 인증 기반 프리미엄 데이팅 앱 MVP</p>
+          <p class="text-xs text-slate-400">프로젝트 제안서</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+
+      <!-- ─── Sidebar ─── -->
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 lg:hidden" onclick="closeSidebar()"></div>
+      <aside id="sidebar" class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-soft backdrop-blur lg:sticky lg:top-6 lg:h-[calc(100vh-4rem)] lg:overflow-auto">
+        <nav id="nav" class="space-y-1">
+          <a href="#home" data-page="home" class="nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700">홈</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">제안서</p>
+          <a href="#overview" data-page="overview" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">프로젝트 소개</a>
+          <a href="#estimate" data-page="estimate" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">견적서</a>
+          <a href="#manday" data-page="manday" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">공수계산서</a>
+          <a href="#prd" data-page="prd" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">PRD</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">일정 & 경험</p>
+          <a href="#timeline" data-page="timeline" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">일정 제안</a>
+          <a href="#portfolio" data-page="portfolio" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">유사 프로젝트 경험</a>
+        </nav>
+      </aside>
+
+      <!-- ─── Main Content ─── -->
+      <main class="min-w-0">
+
+        <!-- PAGE: Home -->
+        <div id="page-home" class="page-section active space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur md:p-8">
+            <p class="mb-2 text-xs font-semibold tracking-[0.2em] text-sky-700/80">프로젝트 제안서</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">취미 및 프로필 인증 기반 프리미엄 데이팅 앱 MVP 구축</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">취미·성향 기반 신뢰 매칭과 양방향 호감 표시에서 실시간 채팅으로 이어지는 프리미엄 데이팅 앱 MVP를, 매칭 플랫폼·Flutter B2C 앱·실시간 동기화 수행 경험을 바탕으로 60일 내 iOS/Android 동시 출시까지 책임집니다.</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">18,000,000원 (VAT 별도)</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">60일</span>
+              <span class="inline-flex rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-amber-700">모바일 앱 · 중개·매칭 플랫폼</span>
+              <a href="https://www.wishket.com/project/155926/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-500 transition hover:border-sky-300 hover:text-sky-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                원본 공고
+              </a>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="#overview" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소개</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">프로젝트 소개</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">프로젝트 분석, 핵심 요구사항 정리, 제안 포인트</p>
+            </a>
+            <a href="#estimate" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">비용</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">견적서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">항목별 비용 산출 근거 및 상세 견적</p>
+            </a>
+            <a href="#manday" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">공수</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">공수계산서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능별 개발 공수(man-day) 산출 내역</p>
+            </a>
+            <a href="#prd" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">기획</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">PRD</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능 요구사항 정의서, 사용자 스토리, 기술 제약</p>
+            </a>
+            <a href="#timeline" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">일정</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">일정 제안</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">단계별 마일스톤 및 산출물 일정표</p>
+            </a>
+            <a href="#portfolio" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">경험</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">유사 프로젝트 경험</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">유사 프로젝트 수행 경험 및 기술 스택</p>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">9개</p>
+              <p class="mt-1 text-xs text-slate-500">사용자 앱 핵심 기능</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">iOS · Android</p>
+              <p class="mt-1 text-xs text-slate-500">동시 출시 (단일 코드베이스)</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">60일</p>
+              <p class="mt-1 text-xs text-slate-500">MVP 출시 납기</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">실시간</p>
+              <p class="mt-1 text-xs text-slate-500">1:1 채팅 + FCM 푸시</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">각 메뉴를 클릭하시면 상세 내용을 확인하실 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- PAGE: 프로젝트 소개 -->
+        <div id="page-overview" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>프로젝트 소개</h1>
+              <blockquote>취미·성향 인증 기반의 신뢰 매칭 → 양방향 호감 → 실시간 채팅으로 이어지는 프리미엄 데이팅 앱 MVP를, iOS/Android 동시 출시까지 책임지고 구축합니다.</blockquote>
+
+              <h2>프로젝트 개요</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td><a href="https://www.wishket.com/project/155926/" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline decoration-sky-300 hover:decoration-sky-500">취미 및 프로필 인증 기반 프리미엄 데이팅 앱 MVP 구축</a></td></tr>
+                <tr><td>카테고리</td><td>모바일 앱(iOS/Android) · 중개·매칭 플랫폼</td></tr>
+                <tr><td>제안 금액</td><td>18,000,000원 (VAT 별도)</td></tr>
+                <tr><td>제안 기간</td><td>60일 (계약 체결 직후 즉시 착수)</td></tr>
+                <tr><td>핵심 기술</td><td>Flutter, Firebase(Auth/Firestore/FCM/Storage), Supabase, Next.js 관리자 웹</td></tr>
+              </table>
+
+              <h2>핵심 요구사항 분석</h2>
+              <ul>
+                <li><strong>소셜 로그인 + 휴대폰 본인 인증</strong> — 소셜 계정 간편 가입과 SMS 본인 인증으로 신뢰 기반 가입 흐름 구성</li>
+                <li><strong>프로필 등록·관리 + 취미/성향 키워드</strong> — 사진·정보 등록과 매칭용 키워드 설정으로 추천 알고리즘의 기반 데이터 확보</li>
+                <li><strong>추천 피드 (스와이프/리스트)</strong> — 나이·지역·취미 기반 필터가 적용된 이성 추천 노출</li>
+                <li><strong>좋아요·매칭 신청/확인 + 매칭 성공 화면</strong> — 양방향 호감 일치 시 매칭 성사 및 전용 성공 화면 노출</li>
+                <li><strong>1:1 실시간 채팅</strong> — Firebase/Supabase 실시간 동기화 기반 즉시 대화</li>
+                <li><strong>푸시 알림 (FCM)</strong> — 매칭·채팅 이벤트 실시간 알림 + 딥링크 진입</li>
+                <li><strong>관리자 백오피스</strong> — 인증 사진 심사·가입 승인 시스템 및 사용자/매칭 운영 관리</li>
+                <li><strong>산출물</strong> — 앱 설치 파일 및 양대 스토어 등록, 소스 코드 원본, 관리자 매뉴얼</li>
+              </ul>
+
+              <h2>제안 포인트</h2>
+              <ol>
+                <li><strong>매칭 플랫폼 도메인 직접 경험 전이</strong> — Connectin(프로필 기반 매칭·근거리 탐색·1:1 보안 메시징) 수행 경험을 데이팅 추천·매칭 흐름에 그대로 적용합니다.</li>
+                <li><strong>Firebase/Supabase 실시간 + 푸시 검증 패턴</strong> — Calendar Share에서 Firebase RTDB 3종 리스너 기반 실시간 채팅과 7종 FCM 푸시를 구축한 경험으로, 채팅·알림을 안정적으로 구현합니다.</li>
+                <li><strong>Flutter 단일 코드베이스 양대 마켓 출시</strong> — Fortune App 등에서 기획·디자인·개발·스토어 심사까지 단기 풀패키지 출시를 수행하여, iOS/Android 동시 출시 일정을 보장합니다.</li>
+                <li><strong>신뢰 기반 인증 흐름 설계</strong> — 휴대폰 본인 인증과 관리자 인증 사진 심사 승인을 결합해, 프리미엄 데이팅에 필수적인 신뢰 게이트를 MVP 단계부터 견고하게 구성합니다.</li>
+                <li><strong>확장 대비 데이터 모델</strong> — 취미·성향 키워드와 매칭 로그를 정형화 적재하여, 향후 추천 고도화(가중치·큐레이션) 도입에 바로 활용할 수 있도록 설계합니다.</li>
+              </ol>
+
+              <h2>사용 기술 및 툴</h2>
+              <h3>개발 기술</h3>
+              <div class="flex flex-wrap gap-2 not-prose mb-4">
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Flutter</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Dart</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">BLoC / Riverpod</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Firebase Auth</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Firestore / RTDB</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">FCM</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Supabase</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Next.js (관리자 웹)</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">TypeScript</span>
+              </div>
+              <h3>협업 및 커뮤니케이션</h3>
+              <div class="flex flex-wrap gap-2 not-prose">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Slack / 카카오톡</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Zoom / Google Meet</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Notion / Google Docs</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">GitHub Issues</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Figma</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 견적서 -->
+        <div id="page-estimate" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>견적서</h1>
+              <blockquote>본 견적서는 프로젝트 요구사항 분석을 기반으로 산출되었습니다.</blockquote>
+
+              <h2>견적 요약</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td>취미 및 프로필 인증 기반 프리미엄 데이팅 앱 MVP 구축</td></tr>
+                <tr><td>제안 금액</td><td><strong>18,000,000원 (VAT 별도)</strong></td></tr>
+                <tr><td>제안 기간</td><td>60일</td></tr>
+                <tr><td>견적 유효기간</td><td>제안일로부터 30일</td></tr>
+              </table>
+
+              <h2>상세 견적 내역</h2>
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th>수량</th><th>단가</th><th>금액</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>기획/설계</td><td>서비스 기획, 화면 설계, ERD/아키텍처</td><td>1식</td><td>-</td><td>2,400,000원</td></tr>
+                  <tr><td>UI/UX 디자인</td><td>Figma 디자인 시스템 + 앱/관리자 화면</td><td>1식</td><td>-</td><td>2,700,000원</td></tr>
+                  <tr><td>프론트엔드(앱)</td><td>Flutter iOS/Android 앱 개발</td><td>1식</td><td>-</td><td>6,300,000원</td></tr>
+                  <tr><td>백엔드/인프라</td><td>Firebase/Supabase, 실시간 채팅·푸시, 관리자 백오피스</td><td>1식</td><td>-</td><td>4,500,000원</td></tr>
+                  <tr><td>QA/배포</td><td>통합 QA, 스토어 등록·심사 대응</td><td>1식</td><td>-</td><td>2,100,000원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="4">합계 (VAT 별도)</th><th>18,000,000원</th></tr>
+                </tfoot>
+              </table>
+
+              <h2>산정 근거</h2>
+              <ul>
+                <li>전체 요구사항을 작업 단위로 분해한 공수(공수계산서 참조) 기반 산정</li>
+                <li>유사 매칭 플랫폼·Flutter B2C 앱 수행 경험을 통한 검증된 패턴 재활용으로 효율적 진행</li>
+                <li>프리미엄 데이팅 MVP에 필요한 핵심 기능을 60일 내 양대 마켓 출시 가능한 범위로 동결</li>
+              </ul>
+
+              <h2>포함 사항</h2>
+              <ul>
+                <li>소스 코드 전체 이관 (소유권 클라이언트 귀속)</li>
+                <li>개발 문서 (DB 스키마, 데이터 모델, 배포 가이드, 관리자 매뉴얼)</li>
+                <li>앱 설치 파일 및 App Store / Google Play 등록</li>
+                <li>1개월 무상 하자 보수</li>
+                <li>배포 환경 세팅 (1회)</li>
+              </ul>
+
+              <h2>불포함 사항</h2>
+              <ul>
+                <li>서버/BaaS 운영 비용 (Firebase, Supabase, 클라우드 등)</li>
+                <li>도메인·스토어 개발자 계정 비용 (Apple/Google)</li>
+                <li>외부 유료 API 사용 비용 (본인인증 기관 등)</li>
+                <li>하자 보수 기간 이후 유지보수 (월 단위 별도 계약)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 공수계산서 -->
+        <div id="page-manday" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>공수계산서</h1>
+              <blockquote>기능별 개발 공수(Man-Day)를 산출하여 일정과 비용의 근거를 제시합니다.</blockquote>
+
+              <h2>공수 요약</h2>
+              <table>
+                <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
+                <tr><td>기획/설계</td><td>8 M/D</td><td>11%</td></tr>
+                <tr><td>UI/UX 디자인</td><td>10 M/D</td><td>14%</td></tr>
+                <tr><td>프론트엔드(앱)</td><td>28 M/D</td><td>39%</td></tr>
+                <tr><td>백엔드/인프라</td><td>18 M/D</td><td>25%</td></tr>
+                <tr><td>QA/배포</td><td>8 M/D</td><td>11%</td></tr>
+                <tr><th>합계</th><th>72 M/D</th><th>100%</th></tr>
+              </table>
+
+              <h2>기능별 상세 공수</h2>
+              <table>
+                <thead>
+                  <tr><th>기능</th><th>세부 작업</th><th>담당</th><th>공수 (M/D)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>기획/설계</td><td>서비스 기획, 화면 설계, 데이터 모델/ERD, 아키텍처</td><td>기획</td><td>8</td></tr>
+                  <tr><td>UI/UX 디자인</td><td>디자인 시스템, 앱 화면, 관리자 화면</td><td>디자인</td><td>10</td></tr>
+                  <tr><td rowspan="2">인증/온보딩</td><td>소셜 로그인 + 휴대폰 본인 인증 연동</td><td>FE/BE</td><td>4</td></tr>
+                  <tr><td>온보딩·프로필 등록/관리, 사진 업로드</td><td>FE/BE</td><td>4</td></tr>
+                  <tr><td>취미/성향 키워드</td><td>키워드 선택 UI + 매칭용 데이터 구조</td><td>FE/BE</td><td>3</td></tr>
+                  <tr><td>추천 피드/필터</td><td>스와이프·리스트 피드, 나이·지역·취미 필터</td><td>FE/BE</td><td>9</td></tr>
+                  <tr><td>좋아요·매칭</td><td>호감 표시, 매칭 신청/확인, 매칭 성공 화면</td><td>FE/BE</td><td>7</td></tr>
+                  <tr><td>1:1 실시간 채팅</td><td>실시간 메시징(Firebase/Supabase), 채팅방 관리</td><td>FE/BE</td><td>8</td></tr>
+                  <tr><td>푸시 알림</td><td>FCM 연동, 매칭·채팅 알림, 딥링크</td><td>FE/BE</td><td>4</td></tr>
+                  <tr><td>관리자 백오피스</td><td>인증 사진 심사·가입 승인, 사용자/매칭 관리</td><td>BE/Web</td><td>9</td></tr>
+                  <tr><td>QA/배포</td><td>통합 QA, 스토어 등록·심사 대응, 버그 픽스</td><td>전체</td><td>8</td></tr>
+                </tbody>
+              </table>
+
+              <h2>산정 기준</h2>
+              <ul>
+                <li>1 M/D = 8시간 기준 (1인 1일 작업량)</li>
+                <li>주 5일 근무 기준</li>
+                <li>버퍼 10~15% 포함</li>
+                <li>유사 프로젝트 수행 경험 기반 효율적 개발</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: PRD -->
+        <div id="page-prd" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>PRD (Product Requirements Document)</h1>
+              <blockquote>프로젝트 요구사항을 정의하고 기능 범위를 명확히 합니다.</blockquote>
+
+              <h2>1. 프로젝트 배경 및 목적</h2>
+              <p>취미 및 프로필 인증을 기반으로 신뢰할 수 있는 이성을 추천받고, 양방향 호감 표시를 통해 매칭 및 대화를 나눌 수 있는 프리미엄 데이팅 앱 MVP를 구축합니다. 인증 기반 신뢰 게이트와 취미·성향 중심 매칭으로 기존 외모 중심 데이팅 앱과 차별화하고, iOS/Android 동시 출시로 시장 진입을 빠르게 검증하는 것을 목표로 합니다.</p>
+
+              <h2>2. 사용자 정의</h2>
+              <table>
+                <thead>
+                  <tr><th>사용자 유형</th><th>설명</th><th>주요 기능</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>일반 사용자</td><td>인증을 거쳐 매칭을 이용하는 앱 이용자</td><td>가입/인증, 프로필·키워드 등록, 추천 피드, 좋아요·매칭, 실시간 채팅</td></tr>
+                  <tr><td>관리자</td><td>인증 심사·운영을 담당하는 백오피스 사용자</td><td>인증 사진 심사, 가입 승인/거절, 사용자·매칭 관리, 신고 처리</td></tr>
+                </tbody>
+              </table>
+
+              <h2>3. 기능 요구사항</h2>
+              <h3>3.1 가입 및 인증</h3>
+              <ul>
+                <li><strong>[필수]</strong> 소셜 로그인 (Google / Apple, 카카오 확장 가능)</li>
+                <li><strong>[필수]</strong> 휴대폰 본인 인증 (SMS)</li>
+                <li><strong>[필수]</strong> 관리자 승인 기반 가입 완료 (인증 사진 심사)</li>
+              </ul>
+              <h3>3.2 프로필 및 키워드</h3>
+              <ul>
+                <li><strong>[필수]</strong> 사진·기본 정보 등록 및 프로필 관리</li>
+                <li><strong>[필수]</strong> 취미 및 성향 키워드 선택·수정</li>
+              </ul>
+              <h3>3.3 추천 및 매칭</h3>
+              <ul>
+                <li><strong>[필수]</strong> 추천 피드 (스와이프 또는 리스트)</li>
+                <li><strong>[필수]</strong> 기본 필터 (나이·지역·취미)</li>
+                <li><strong>[필수]</strong> 좋아요·매칭 신청/확인, 양방향 일치 시 매칭 성공 화면</li>
+              </ul>
+              <h3>3.4 채팅 및 알림</h3>
+              <ul>
+                <li><strong>[필수]</strong> 1:1 실시간 채팅 (Firebase/Supabase)</li>
+                <li><strong>[필수]</strong> 푸시 알림 (FCM) — 매칭·채팅 이벤트</li>
+              </ul>
+              <h3>3.5 관리자 백오피스</h3>
+              <ul>
+                <li><strong>[필수]</strong> 인증 사진 심사 및 가입 승인/거절</li>
+                <li><strong>[필수]</strong> 사용자/매칭 조회·관리, 신고/차단 처리</li>
+              </ul>
+
+              <h2>4. 비기능 요구사항</h2>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>요구사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>성능</td><td>추천 피드·채팅 메시지 즉시 반영 (실시간 리스너 기반)</td></tr>
+                  <tr><td>보안/프라이버시</td><td>본인 인증·인증 사진 접근 통제, 민감 정보 암호화 저장, 신고/차단 체계</td></tr>
+                  <tr><td>확장성</td><td>키워드·매칭 로그 정형화 적재로 추천 고도화 대비</td></tr>
+                  <tr><td>호환성</td><td>iOS / Android 최신 2개 메이저 OS 버전 지원</td></tr>
+                </tbody>
+              </table>
+
+              <h2>5. 기술 제약사항</h2>
+              <ul>
+                <li>모바일: Flutter 단일 코드베이스 (iOS/Android 동시 출시)</li>
+                <li>백엔드: Firebase(Auth/Firestore/FCM/Storage) 중심, 필요 시 Supabase(Postgres/Realtime) 병행</li>
+                <li>관리자: Next.js 기반 경량 백오피스 (또는 Firebase 콘솔 보조)</li>
+                <li>스토어 정책: Apple/Google 데이팅 카테고리 심사 가이드라인 준수</li>
+              </ul>
+
+              <h2>6. 범위 외 사항 (Out of Scope)</h2>
+              <ul>
+                <li>AI/머신러닝 기반 고도화 추천 알고리즘 (MVP는 키워드·필터 기반)</li>
+                <li>인앱 결제·유료 구독 등 수익화 기능 (차기 단계)</li>
+                <li>영상 통화, 그룹 채팅 등 확장 커뮤니케이션 기능</li>
+                <li>다국어/글로벌 출시 (MVP는 국내 단일 언어 기준)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 일정 제안 -->
+        <div id="page-timeline" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>일정 제안</h1>
+              <blockquote>총 60일 기준 단계별 마일스톤 및 산출물을 제안합니다.</blockquote>
+
+              <h2>전체 일정 요약</h2>
+              <table>
+                <thead>
+                  <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Phase 1: 기획/설계</td><td>Day 1–12</td><td>화면 설계서, 데이터 모델/ERD, 시스템 아키텍처</td></tr>
+                  <tr><td>Phase 2: 디자인 + BE 착수</td><td>Day 13–30</td><td>Figma 디자인, Firebase/Supabase 구성, 인증·프로필 모듈</td></tr>
+                  <tr><td>Phase 3: 풀스택 개발</td><td>Day 31–50</td><td>추천·매칭·채팅·푸시, 관리자 백오피스, 베타 빌드</td></tr>
+                  <tr><td>Phase 4: QA + 스토어 등록</td><td>Day 51–60</td><td>통합 QA, 스토어 등록·심사, 정식 출시, 매뉴얼</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <h2 class="mb-4 text-sm font-semibold tracking-[0.14em] text-slate-500">상세 타임라인</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
+                <h4 class="text-base font-semibold text-slate-900">기획 및 설계</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 1–12</p>
+                <p class="text-sm leading-7 text-slate-600">킥오프, 서비스 기획·화면 설계, 매칭/키워드 정책 확정, 데이터 모델·아키텍처 설계</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 화면 설계서, ERD/데이터 모델, 시스템 아키텍처 다이어그램</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
+                <h4 class="text-base font-semibold text-slate-900">디자인 + 백엔드 착수</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 13–30</p>
+                <p class="text-sm leading-7 text-slate-600">Figma 디자인 시스템 → 앱/관리자 화면, Firebase/Supabase 구성, 소셜 로그인·휴대폰 인증·프로필 모듈 우선 개발</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: Figma 원본, 인증·프로필 기능, BaaS 환경 가동</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
+                <h4 class="text-base font-semibold text-slate-900">풀스택 개발</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 31–50</p>
+                <p class="text-sm leading-7 text-slate-600">추천 피드·필터, 좋아요·매칭·매칭 성공 화면, 1:1 실시간 채팅, FCM 푸시, 관리자 백오피스 풀구현</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 통합 베타 빌드 (TestFlight + Internal Testing)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
+                <h4 class="text-base font-semibold text-slate-900">QA + 스토어 등록 + 출시</h4>
+                <p class="mb-1 text-xs font-semibold text-amber-600">Day 51–60</p>
+                <p class="text-sm leading-7 text-slate-600">통합 QA 시나리오 테스트, App Store / Google Play 등록·심사 대응, 정식 출시, 관리자 매뉴얼 인계</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 앱 설치 파일·스토어 등록, 소스 코드 원본, 관리자 매뉴얼, 1개월 무상 하자보수 개시</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h2>마일스톤 체크포인트</h2>
+              <table>
+                <thead>
+                  <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>M1: 기획·설계 완료</td><td>Day 12</td><td>화면 설계서·ERD·아키텍처 승인</td></tr>
+                  <tr><td>M2: 디자인 + 인증/프로필 데모</td><td>Day 30</td><td>Figma 전체 화면 승인, 로그인·본인인증·프로필 작동 확인</td></tr>
+                  <tr><td>M3: 통합 베타 빌드</td><td>Day 50</td><td>iOS/Android 설치, 추천·매칭·채팅·푸시 시나리오 통과</td></tr>
+                  <tr><td>M4: 정식 출시</td><td>Day 60</td><td>스토어 정식 노출, 소스·매뉴얼 인계</td></tr>
+                </tbody>
+              </table>
+
+              <h2>커뮤니케이션 계획</h2>
+              <table>
+                <tr><th>항목</th><th>방식</th><th>주기</th></tr>
+                <tr><td>일일 진행 공유</td><td>Slack / 카카오톡</td><td>매일</td></tr>
+                <tr><td>주간 미팅</td><td>Zoom / Google Meet</td><td>주 1회</td></tr>
+                <tr><td>마일스톤 리뷰</td><td>화면 공유 + 문서</td><td>단계 완료 시</td></tr>
+                <tr><td>이슈 트래킹</td><td>GitHub Issues</td><td>상시</td></tr>
+              </table>
+            </article>
+          </div>
+        </div>
+
+        <!-- PAGE: 포트폴리오 -->
+        <div id="page-portfolio" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>유사 프로젝트 경험</h1>
+              <blockquote>본 프로젝트와 유사한 기능/기술 스택을 활용한 수행 경험을 소개합니다.</blockquote>
+            </article>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">매칭 플랫폼</p>
+              <p class="mt-1 text-xs text-slate-500">프로필 기반 매칭 경험</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">Flutter</p>
+              <p class="mt-1 text-xs text-slate-500">B2C 앱 양대 마켓 출시</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">실시간</p>
+              <p class="mt-1 text-xs text-slate-500">채팅 + 7종 FCM 푸시 구축</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">Firebase</p>
+              <p class="mt-1 text-xs text-slate-500">+ Supabase 듀얼 백엔드</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Connectin -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">매칭·네트워킹 플랫폼</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Connectin — 디지털 명함 & 네트워킹 플랫폼</h3>
+              <p class="mt-1 text-xs text-slate-400">B2B 매칭 플랫폼 · 2025.05~2025.08 (3개월)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>프로필 기반으로 주변 전문가를 발견하고 1:1 보안 메시징으로 연결하는 매칭·네트워킹 플랫폼. Flutter + Express, 12 마이크로서비스, 63 API, 41 모바일 기능 모듈.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>프로필 기반 매칭 및 BLE/GPS 근거리 탐색</li>
+                  <li>Signal Protocol E2E 암호화 1:1 메시징</li>
+                  <li>OCR 명함 스캔, 소셜 피드, 관리자 패널</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p>프로필 기반 매칭 도메인을 직접 수행한 경험으로, 추천·좋아요·매칭·1:1 채팅 흐름을 데이팅 앱에 그대로 전이할 수 있습니다. Flutter 양대 마켓 출시와 관리자 패널 구축 경험도 본 프로젝트와 직접 대응됩니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">BLoC</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Express</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">PostgreSQL</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase Auth/FCM</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calendar Share -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소셜 앱 · 실시간</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Calendar Share — 소셜 캘린더 공유 앱</h3>
+              <p class="mt-1 text-xs text-slate-400">B2C 소셜 앱 (Flutter) · 2025.01 (MVP)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>소셜 피드와 실시간 채팅을 결합한 크로스플랫폼 모바일 앱. Flutter 17.6K LOC, 45+ 화면, Firebase 8개 서비스 + Supabase 듀얼 백엔드.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>1:1 실시간 채팅 (Firebase RTDB 3종 리스너 기반 즉시 동기화)</li>
+                  <li>7종 FCM 푸시 알림 + 딥링크 네비게이션</li>
+                  <li>좋아요·팔로우 등 소셜 인터랙션, QR 디스커버리</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p>본 프로젝트 핵심인 1:1 실시간 채팅과 FCM 푸시를 Firebase/Supabase로 구축한 직접 경험. 좋아요·팔로우 등 소셜 인터랙션 패턴도 좋아요·매칭 흐름에 그대로 적용 가능합니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter 3.27</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase RTDB/Firestore</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Supabase</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">FCM</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Provider</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fortune App -->
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">B2C 앱 · 단기 출시</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Fortune App — Flutter B2C 운세 앱</h3>
+              <p class="mt-1 text-xs text-slate-400">B2C 라이프스타일 앱 · 2024.07~2024.09 (3개월)</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>기획·디자인·개발을 단기에 풀패키지로 수행하여 iOS/Android 동시 출시한 Flutter B2C 앱. 305 Dart 파일, ~16K LOC, Clean Architecture.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>Google / Apple 소셜 로그인 (SSO)</li>
+                  <li>포인트·데일리 체크인 리워드(게이미피케이션)</li>
+                  <li>결과 공유, Firebase Analytics/Remote Config</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <p>Flutter 단일 코드베이스로 3개월 내 기획~디자인~개발~스토어 출시까지 완수한 패턴이 본 프로젝트 60일 MVP 일정의 직접 근거입니다. 소셜 로그인과 Firebase 연동도 동일하게 활용됩니다.</p>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Flutter 3.22</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">BLoC/Cubit</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Firebase</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Node.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Clean Architecture</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">프로젝트에 대해 더 자세한 논의를 원하시면 미팅을 신청해 주세요.</p>
+          </div>
+        </div>
+
+        <!-- ─── Bottom Page Navigation ─── -->
+        <div id="page-nav" class="mt-6 flex items-center justify-between gap-4" style="display:none;">
+          <a id="nav-prev" href="#home"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>
+              <span class="block text-xs text-slate-400">이전</span>
+              <span id="nav-prev-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">홈</span>
+            </span>
+          </a>
+          <a id="nav-next" href="#overview"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white text-right ml-auto">
+            <span>
+              <span class="block text-xs text-slate-400">다음</span>
+              <span id="nav-next-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">프로젝트 소개</span>
+            </span>
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      &copy; 2026 &middot; 본 제안서는 취미 및 프로필 인증 기반 프리미엄 데이팅 앱 MVP 구축 프로젝트를 위해 작성되었습니다.
+    </footer>
+  </div>
+
+  <!-- ─── SPA Router ─── -->
+  <script>
+    const pages = ['home', 'overview', 'estimate', 'manday', 'prd', 'timeline', 'portfolio'];
+    const pageLabels = {
+      home: '홈', overview: '프로젝트 소개', estimate: '견적서',
+      manday: '공수계산서', prd: 'PRD', timeline: '일정 제안', portfolio: '유사 프로젝트 경험'
+    };
+
+    function navigate(pageId) {
+      if (!pages.includes(pageId)) pageId = 'home';
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.dataset.page === pageId) {
+          link.className = 'nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700';
+        } else {
+          link.className = 'nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900';
+        }
+      });
+      updatePageNav(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeSidebar();
+    }
+
+    function updatePageNav(pageId) {
+      const nav = document.getElementById('page-nav');
+      const idx = pages.indexOf(pageId);
+      const prevBtn = document.getElementById('nav-prev');
+      const nextBtn = document.getElementById('nav-next');
+      const prevLabel = document.getElementById('nav-prev-label');
+      const nextLabel = document.getElementById('nav-next-label');
+
+      nav.style.display = (pageId === 'home') ? 'none' : 'flex';
+
+      if (idx > 0) {
+        prevBtn.href = '#' + pages[idx - 1];
+        prevLabel.textContent = pageLabels[pages[idx - 1]];
+        prevBtn.style.visibility = 'visible';
+      } else {
+        prevBtn.style.visibility = 'hidden';
+      }
+
+      if (idx < pages.length - 1) {
+        nextBtn.href = '#' + pages[idx + 1];
+        nextLabel.textContent = pageLabels[pages[idx + 1]];
+        nextBtn.style.visibility = 'visible';
+      } else {
+        nextBtn.style.visibility = 'hidden';
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    function handleHash() {
+      const hash = (location.hash || '#home').replace('#', '');
+      navigate(hash);
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('DOMContentLoaded', handleHash);
+
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-backdrop').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
